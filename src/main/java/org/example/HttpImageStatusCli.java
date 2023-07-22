@@ -4,22 +4,26 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class HttpImageStatusCli {
-    void askStatus() throws Exception {
+    void askStatus()  {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter HTTP status code");
+        System.out.println("Enter HTTP status code (or 'q' to quit):");
 
-        String code =scanner.nextLine();
-        while (!code.matches("[0-9]{3}")){
-            System.out.println("Please enter valid number");
-            code = scanner.nextLine();
+        while (scanner.hasNext()) {
+            if (scanner.hasNextInt()) {
+                int code = scanner.nextInt();
+                if (String.valueOf(code).length() == 3) {
+                    new HttpStatusImageDownloader().downloadStatusImage(code);
+                } else {
+                    System.out.println("Please enter a valid 3-digit number");
+                }
+            } else if (scanner.hasNext("q")) {
+                break;
+            } else {
+                System.out.println("Please enter a valid number");
+                scanner.next();
+            }
         }
         scanner.close();
-        try {
-            new HttpStatusImageDownloader().downloadStatusImage(Integer.parseInt(code));
-            System.out.println("Image download!");
-        } catch (Exception e) {
-            throw new Exception ("There is not image for HTTP status " + code);
-        }
-
+        System.out.println("Exiting the program. Goodbye!");
     }
 }

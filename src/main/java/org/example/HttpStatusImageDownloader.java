@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class HttpStatusImageDownloader {
@@ -12,15 +11,14 @@ public class HttpStatusImageDownloader {
         String image = null;
         try {
             image = new HttpStatusChecker().getStatusImage(code);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        try (InputStream in = new URL(image).openStream()){
-            Files.copy(in, Paths.get("./"+ code + ".jpg"));
-        }catch (IOException e){
-            e.printStackTrace();
+            try (InputStream in = new URL(image).openStream()) {
+                Files.copy(in, Paths.get("./" + code + ".jpg"));
+                System.out.println("Image downloaded successfully for HTTP status " + code);
+            } catch (IOException e) {
+                System.out.println("Error downloading image: " + e.getMessage());
+            }
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }
